@@ -2,7 +2,7 @@
 #  Simple Hash Tool Based on PyQt5
 #  
 #  author: HML @ EIE, XJTU
-#  email: linmh0130@stu.cjtu.edu.cn
+#  email: linmh0130@stu.xjtu.edu.cn
 ####################################
 
 import sys
