@@ -31,10 +31,12 @@ class main_dialog(QDialog):
 
     def push_opn_callback(self):
         if file_name_tuple := QFileDialog.getOpenFileName(self,"Select File"):
-            self.filename = file_name_tuple[0]
-            self.ui.lineEdit_FileName.setText(self.filename)
-            self.filesize = os.path.getsize(self.filename)
-            self.file_lastModifyTime = os.path.getmtime(self.filename)
+            # 如果在文件打开窗口选取消，file_name_tuple = ['','']，需要判断一下是否真的打开了文件，不然程序可能崩溃
+            if len(file_name_tuple[0]) > 0:
+                self.filename = file_name_tuple[0]
+                self.ui.lineEdit_FileName.setText(self.filename)
+                self.filesize = os.path.getsize(self.filename)
+                self.file_lastModifyTime = os.path.getmtime(self.filename)
 
     def push_gen_callback(self):
         buf_len = 1024
@@ -43,8 +45,18 @@ class main_dialog(QDialog):
                 while buffer := file_obj.read(buf_len):
                     self.hash_md5.update(buffer)
                     self.hash_sha256.update(buffer)
+
+            if (self.filesize <1024):
+                str_size_ind = "Size: " + str(self.filesize) + " B\n"
+            elif (self.filesize <1024*1024):
+                str_size_ind = "Size: " + str(round(self.filesize*100/1024)/100) + " kB\n"
+            elif (self.filesize <1024*1024*1024):
+                str_size_ind = "Size: " + str(round(self.filesize*100/1024/1024)/100) + " MB\n"
+            else:
+                str_size_ind = "Size: " + str(round(self.filesize*100/1024/1024/1024)/100) + " GB\n"
+
             self.str_showText = self.str_showText + "PATH: " + self.filename + "\n" +\
-                                "Size: " + str(round(self.filesize/1024)) + " kB\n" +\
+                                str_size_ind +\
                                 "Last Modify Time: " + time.ctime(self.file_lastModifyTime) +"\n" +\
                                 "MD5: " + self.hash_md5.hexdigest() + "\n" +\
                                 "SHA256: " + self.hash_sha256.hexdigest() + "\n\n"
